@@ -1,0 +1,29 @@
+resources:
+  jobs:
+    sales_job:
+
+      name: sales_etl_job
+
+      tasks:
+
+        - task_key: bronze
+          spark_python_task:
+            python_file: ../src/01_bronze_ingestion.py
+
+        - task_key: quality
+          depends_on:
+            - task_key: bronze
+          spark_python_task:
+            python_file: ../src/00_data_quality_report.py
+
+        - task_key: silver
+          depends_on:
+            - task_key: quality
+          spark_python_task:
+            python_file: ../src/02_silver_cleaning.py
+
+        - task_key: gold
+          depends_on:
+            - task_key: silver
+          spark_python_task:
+            python_file: ../src/03_gold_analytics.py
